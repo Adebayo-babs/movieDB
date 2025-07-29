@@ -18,6 +18,7 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private var currentPage = 1
+    private var isLastPage = false
     private var canLoadMore = true
 
     init {
@@ -32,20 +33,16 @@ class HomeViewModel @Inject constructor(
 
             repository.getPopularMovies(currentPage).fold(
                 onSuccess = { response ->
-                    val newMovies = if (currentPage == 1) {
-                        response.results
+                    if (response.results.isEmpty()) {
+                        isLastPage = true
                     } else {
-                        _uiState.value.movies + response.results
+                        _uiState.value = _uiState.value.copy(
+                            movies = _uiState.value.movies + response.results,
+                            isLoading = false,
+                            error = null
+                        )
+                        currentPage++
                     }
-
-                    _uiState.value = _uiState.value.copy(
-                        movies = newMovies,
-                        isLoading = false,
-                        error = null
-                    )
-
-                    currentPage++
-                    canLoadMore = currentPage <= response.totalPages
                 },
                 onFailure = { error ->
                     _uiState.value = _uiState.value.copy(
