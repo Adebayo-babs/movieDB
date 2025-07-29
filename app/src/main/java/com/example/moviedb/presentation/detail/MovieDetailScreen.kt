@@ -82,7 +82,7 @@ fun MovieDetailScreen(
                 }
                 uiState.error != null -> {
                     ErrorScreen(
-                        error = uiState.error ?: "Unknown error",
+                        error = uiState.error ?: "Unknown error has occurred",
                         onRetry = { viewModel.loadMovieDetails(movieId) }
                     )
                 }
