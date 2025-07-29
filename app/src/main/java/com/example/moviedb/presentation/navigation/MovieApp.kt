@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.moviedb.presentation.detail.MovieDetailScreen
 import com.example.moviedb.presentation.home.HomeScreen
+import com.example.moviedb.presentation.home.SearchScreen
 
 @Composable
 fun MovieApp() {
@@ -19,6 +20,7 @@ fun MovieApp() {
     ) {
         composable("home") {
             HomeScreen(
+                navController = navController,
                 onMovieClick = { movieId ->
                     navController.navigate("movieDetail/$movieId")
                 }
@@ -36,6 +38,14 @@ fun MovieApp() {
                 onBackClick = { navController.popBackStack() }
             )
 
+        }
+
+        composable("search") {
+            SearchScreen(
+                navController = navController,
+                onMovieClick = { movieId ->
+                    navController.navigate("movieDetail/$movieId")
+            })
         }
     }
 }

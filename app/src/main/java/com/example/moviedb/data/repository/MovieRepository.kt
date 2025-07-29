@@ -3,6 +3,7 @@ package com.example.moviedb.data.repository
 import com.example.moviedb.data.api.MovieApiService
 import com.example.moviedb.data.model.Movie
 import com.example.moviedb.data.model.MovieResponse
+import retrofit2.http.Query
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor(
@@ -23,6 +24,15 @@ class MovieRepository @Inject constructor(
     suspend fun getMovieDetails(movieId: Int): Result<Movie> {
         return try {
             val response = apiService.getMovieDetails(movieId = movieId, apiKey = apiKey)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun searchMovies(query: String, page: Int = 1): Result<MovieResponse> {
+        return try {
+            val response = apiService.searchMovies(query = query, apiKey = apiKey, page = page)
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
