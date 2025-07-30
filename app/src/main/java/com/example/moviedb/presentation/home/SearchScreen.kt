@@ -1,6 +1,5 @@
 package com.example.moviedb.presentation.home
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,17 +17,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +40,7 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var query by remember { mutableStateOf("") }
+    val query by viewModel.query.collectAsState()
 
     Column(
         modifier = Modifier
@@ -65,17 +60,14 @@ fun SearchScreen(
                 )
             }
 
-            OutlinedTextField(
+            TextField(
                 value = query,
-                onValueChange = { query = it },
-                placeholder = { Text("Search movies...") },
-                singleLine = true,
-                trailingIcon = {
-                    IconButton(onClick = { viewModel.searchMovies(query) }) {
-                        Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
+                onValueChange = { viewModel.onQueryChange(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp),
+                placeholder = { Text("Search movies...", color = Color.Gray) },
+                singleLine = true
             )
         }
 
@@ -84,10 +76,10 @@ fun SearchScreen(
 
         when {
             uiState.error != null -> {
-                ErrorScreen(error = uiState.error!!, onRetry = { viewModel.searchMovies(query)})
+                ErrorScreen(error = uiState.error!!, onRetry = { viewModel.onQueryChange(query)})
             }
             uiState.isLoading -> {
-                Text("Loading...", color = Color.White)
+                Text("Searching...", color = Color.White)
             }
             else -> {
                 LazyVerticalGrid(

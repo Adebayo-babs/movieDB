@@ -31,7 +31,6 @@ fun MovieApp() {
             "movieDetail/{movieId}",
             arguments = listOf(navArgument("movieId") { type = NavType.IntType })
         ) { backStackEntry ->
-//            val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: throw IllegalArgumentException("MovieId missing in navigation")
             MovieDetailScreen(
                 movieId = movieId,

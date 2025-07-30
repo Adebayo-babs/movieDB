@@ -3,7 +3,6 @@ package com.example.moviedb.data.repository
 import com.example.moviedb.data.api.MovieApiService
 import com.example.moviedb.data.model.Movie
 import com.example.moviedb.data.model.MovieResponse
-import retrofit2.http.Query
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor(
