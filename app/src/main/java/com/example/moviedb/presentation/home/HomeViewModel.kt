@@ -2,6 +2,7 @@ package com.example.moviedb.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.moviedb.data.model.MovieCategory
 import com.example.moviedb.data.repository.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            repository.getPopularMovies(currentPage).fold(
+            repository.getMoviesByCategory(_uiState.value.selectedCategory, currentPage).fold(
                 onSuccess = { response ->
                     if (response.results.isEmpty()) {
                         isLastPage = true
@@ -49,11 +50,41 @@ class HomeViewModel @Inject constructor(
                         isLoading = false,
                         error = error.message
                     )
+
                 }
             )
+
+
         }
     }
 
+    fun selectCategory(category: MovieCategory) {
+        if (category != _uiState.value.selectedCategory) {
+            _uiState.value = _uiState.value.copy(
+                selectedCategory = category,
+                movies = emptyList(),
+                showCategoryDropdown = false,
+                isLoading = false,
+                error = null
+            )
+            resetPagination()
+            loadMovies()
+        } else {
+            _uiState.value = _uiState.value.copy(showCategoryDropdown = false)
+        }
+    }
+
+    private fun resetPagination() {
+        currentPage = 1
+        canLoadMore = true
+        isLastPage = false
+    }
+
+    fun  toggleCategoryDropdown() {
+        _uiState.value = _uiState.value.copy(
+            showCategoryDropdown = !_uiState.value.showCategoryDropdown
+        )
+    }
     fun retry() {
         currentPage = 1
         canLoadMore = true

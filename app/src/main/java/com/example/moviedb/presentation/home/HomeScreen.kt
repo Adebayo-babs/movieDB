@@ -2,6 +2,7 @@ package com.example.moviedb.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,7 +17,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.moviedb.data.model.MovieCategory
 import com.example.moviedb.presentation.common.components.ErrorScreen
 import com.example.moviedb.presentation.home.components.MovieCard
 import com.example.moviedb.presentation.home.components.MovieCardSkeleton
@@ -59,8 +65,8 @@ fun HomeScreen(
 
     Column(
     modifier = Modifier
-    .fillMaxSize()
-    .background(Color(0xFF0D1117))
+        .fillMaxSize()
+        .background(Color(0xFF0D1117))
         .navigationBarsPadding()
         .statusBarsPadding()
     ) {
@@ -73,20 +79,62 @@ fun HomeScreen(
         ) {
             // Header
             Text(
-                text = "Popular Movies",
+                text = uiState.selectedCategory.displayName,
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(16.dp)
             )
 
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
+
+
+            // Search Button
             IconButton(onClick = { navController.navigate("search") }) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
                     tint = Color.White)
+            }
+
+            // Category dropdown button
+            Box {
+                IconButton(onClick = { viewModel.toggleCategoryDropdown()}) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = "Categories",
+                        tint = Color.White
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = uiState.showCategoryDropdown,
+                    onDismissRequest = { viewModel.toggleCategoryDropdown() },
+                    modifier = Modifier.background(Color(0xFF1C2128))
+                ) {
+                    MovieCategory.entries.forEach { category ->
+                        DropdownMenuItem(
+                            onClick = { viewModel.selectCategory(category)},
+                            text = {
+                                Text(
+                                    text = category.displayName,
+                                    color = if (category == uiState.selectedCategory) {
+                                        Color(0xFF58A6FF)
+                                    } else {
+                                        Color.White
+                                    },
+                                    fontWeight = if (category == uiState.selectedCategory) {
+                                        FontWeight.Bold
+                                    } else {
+                                        FontWeight.Normal
+                                    }
+                                )
+                            }
+                        )
+
+                    }
+                }
             }
         }
 

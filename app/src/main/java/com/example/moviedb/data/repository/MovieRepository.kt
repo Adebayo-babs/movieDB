@@ -2,6 +2,7 @@ package com.example.moviedb.data.repository
 
 import com.example.moviedb.data.api.MovieApiService
 import com.example.moviedb.data.model.Movie
+import com.example.moviedb.data.model.MovieCategory
 import com.example.moviedb.data.model.MovieResponse
 import javax.inject.Inject
 
@@ -17,6 +18,32 @@ class MovieRepository @Inject constructor(
             Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+
+    suspend fun getNowPlayingMovies(page: Int): Result<MovieResponse> {
+        return try {
+            val response = apiService.getNowPlayingMovies(page = page, apiKey = apiKey)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTopRatedMovies(page: Int): Result<MovieResponse> {
+        return try {
+            val response = apiService.getTopRatedMovies(page = page, apiKey = apiKey)
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getMoviesByCategory(category: MovieCategory, page: Int): Result<MovieResponse> {
+        return when (category) {
+            MovieCategory.POPULAR -> getPopularMovies(page)
+            MovieCategory.NOW_PLAYING -> getNowPlayingMovies(page)
+            MovieCategory.TOP_RATED -> getTopRatedMovies(page)
         }
     }
 
